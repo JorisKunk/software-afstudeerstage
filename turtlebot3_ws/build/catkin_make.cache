@@ -1,0 +1,2 @@
+wandelbuddy_pkg
+-DCATKIN_DEVEL_PREFIX=/home/joris/Workspaces/turtlebot3_ws/devel -DCMAKE_INSTALL_PREFIX=/home/joris/Workspaces/turtlebot3_ws/install -G Unix Makefiles
