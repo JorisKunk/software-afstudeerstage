@@ -1,13 +1,22 @@
 #include <SPI.h>
 #include "DW1000Ranging.h"
 #include "DW1000.h"
-
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
 #include "MedianFilter.h"
 
 char anchor_addr[] = "84:00:5B:D5:A9:9A:E2:9C";
 uint16_t Adelay = 16605;
 //16550
 //16620
+
+#define SCREEN_WIDTH 128    // OLED display width, in pixels
+#define SCREEN_HEIGHT 64    // OLED display height, in pixels
+#define OLED_RESET     4    // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C // 0x3D for 128x64, 0x3C for 128x32
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
 
 #define SPI_SCK 18
 #define SPI_MISO 19
@@ -26,6 +35,20 @@ void setup() {
   delay(1000);
 
   SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
+
+    Wire.begin();
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;);
+  }
+
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);  
+  display.print("******************************");
+  display.display();
 
   DW1000Ranging.initCommunication(PIN_RST, PIN_SS, PIN_IRQ);
   DW1000.setAntennaDelay(Adelay);
@@ -54,7 +77,15 @@ void newRange() {
   // Gegevens verzenden via seriële communicatie
   Serial.print(currentTime);
   Serial.print(",");
-  Serial.println(newDistance);
+  Serial.println(filteredDistance);
+
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.print("Distance");
+  display.setCursor(0, 30);
+  display.print(filteredDistance);
+  display.print(" m");
+  display.display();
 }
 
 void newDevice(DW1000Device *device) {
