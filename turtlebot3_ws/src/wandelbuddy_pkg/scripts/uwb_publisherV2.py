@@ -13,7 +13,7 @@ def uwb_data_pub():
     baud_rate = 115200
 
     try:
-        ser = serial.Serial(serial_port, baud_rate, timeout=0.1)
+        ser = serial.Serial(serial_port, baud_rate)
         print(f"Verbonden met {serial_port} op {baud_rate} bps")
 
         #rate = rospy.Rate(5)
