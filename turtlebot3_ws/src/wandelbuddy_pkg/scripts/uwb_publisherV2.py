@@ -13,10 +13,10 @@ def uwb_data_pub():
     baud_rate = 115200
 
     try:
-        ser = serial.Serial(serial_port, baud_rate, timeout=1)
+        ser = serial.Serial(serial_port, baud_rate, timeout=0.1)
         print(f"Verbonden met {serial_port} op {baud_rate} bps")
 
-        rate = rospy.Rate(5)
+        #rate = rospy.Rate(5)
         while not rospy.is_shutdown():
             # Lees uwb-data van de seriële poort
             uwb_data_bytes = ser.readline()
@@ -27,7 +27,7 @@ def uwb_data_pub():
             # Publiceer de uwb-data op het ROS-topic
             pub.publish(uwb_data)
 
-            rate.sleep()
+            #rate.sleep()
 
     except serial.SerialException as e:
         print(f"Fout bij verbinden met {serial_port}: {e}")
