@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   serial
+  sound_play
 )
 
 ## System dependencies are found with CMake's conventions
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES wandelbuddy_pkg
-#  CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs serial
+#  CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs serial sound_play
 #  DEPENDS system_lib
 )
 
