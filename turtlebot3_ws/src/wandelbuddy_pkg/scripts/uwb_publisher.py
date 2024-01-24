@@ -19,7 +19,7 @@ def uwb_data_pub():
         rate = rospy.Rate(5)
         while not rospy.is_shutdown():
             # Lees uwb-data van de seriële poort
-            uwb_data = ser.readline().decode().strip()
+            uwb_data = ser.readline() #.decode().strip()
 
             # Publiceer de uwb-data op het ROS-topic
             pub.publish(uwb_data)

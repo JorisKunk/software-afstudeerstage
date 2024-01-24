@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rospy
 from sound_play.msg import SoundRequest
@@ -13,7 +13,7 @@ def play_audio(file_path):
 if __name__ == '__main__':
     rospy.init_node('speaker_control_node')
 
-    file_path = "/../Sounds/Attention_call.wav"  # Vervang dit door het pad naar je audiobestand
+    file_path = "~/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Attention_call.wav"  # Vervang dit door het pad naar je audiobestand
 
     play_audio(file_path)
 
