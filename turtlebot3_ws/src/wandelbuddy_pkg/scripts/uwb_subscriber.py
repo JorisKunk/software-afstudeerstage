@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Voorbeeldcode voor ROS Master UWB Data Subscriber
 import rospy
 from std_msgs.msg import String
