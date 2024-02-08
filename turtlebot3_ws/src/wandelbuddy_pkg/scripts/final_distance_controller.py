@@ -121,10 +121,11 @@ def check_and_control_navigation():
         elif goal_reached:
             # Speel geluid af als het doel is bereikt
             print("Goal reached. try to play sound:")
-            play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Arrive_goal.wav')
+            play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/De bestemming is ber.wav')
 
             goal_reached = False  # Reset de variabele na het afspelen van het geluid
             rospy.sleep(5)
+            play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Ik keer nu terug naa.wav')
             if start_pose is not None:
                 print("Returning to start position...")
                 move_base_client = SimpleActionClient('/move_base', MoveBaseAction)
