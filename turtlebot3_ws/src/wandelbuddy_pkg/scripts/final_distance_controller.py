@@ -3,7 +3,7 @@
 import rospy
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID, GoalStatusArray
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, PoseWithCovarianceStamped
 from move_base_msgs.msg import MoveBaseGoal, MoveBaseAction
 from geometry_msgs.msg import PoseStamped
 from actionlib import SimpleActionClient
@@ -14,14 +14,30 @@ from sound_play.libsoundplay import SoundClient
 # Definieer de drempelwaarde als een globale variabele
 THRESHOLD_DISTANCE = 1.70
 
+current_pose = None
+start_pose = None
 old_goal = None
 goal_reached = False
 sound_played = False
 soundhandle = SoundClient()
 
+def current_pose_callback(msg):
+    global current_pose
+    current_pose = msg
+
+def save_start_pose():
+    global start_pose
+    rospy.sleep(1)  # Wacht een seconde om ervoor te zorgen dat de huidige pose wordt gepubliceerd
+    start_pose = current_pose
+    if start_pose is None:
+        print("couldn't get start pose")
+    else: 
+        print("start pose saved")
+    rospy.sleep(2.0)
 # Definieer de publishers als globale variabelen
 cancel_goal_pub = rospy.Publisher('/move_base/cancel', GoalID, queue_size=10)
 cmd_vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+current_pose_sub = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, current_pose_callback)
 
 def current_goal_callback(msg):
     global old_goal
@@ -108,6 +124,18 @@ def check_and_control_navigation():
             play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Arrive_goal.wav')
 
             goal_reached = False  # Reset de variabele na het afspelen van het geluid
+            rospy.sleep(5)
+            if start_pose is not None:
+                print("Returning to start position...")
+                move_base_client = SimpleActionClient('/move_base', MoveBaseAction)
+                move_base_client.wait_for_server()
+                goal_msg = MoveBaseGoal()
+                goal_msg.target_pose.header.frame_id = "map"  # Frame ID instellen op "map"
+                goal_msg.target_pose.pose = start_pose.pose.pose  # Gebruik de pose uit start_pose
+                move_base_client.send_goal(goal_msg)
+            else:
+                print("Start position is not saved. Cannot return to start.")
+
             # Stop het script na het afspelen van het geluid
             rospy.signal_shutdown("Goal reached")
         #else:
@@ -150,10 +178,12 @@ if __name__ == '__main__':
     try:
         ser = serial.Serial(serial_port, baud_rate)
         print(f"Verbonden met {serial_port} op {baud_rate} bps")
-
+        save_start_pose()
         while not rospy.is_shutdown():
             # Controleer de afstand en bestuur de navigatie
             check_and_control_navigation()
+            
+
 
     except serial.SerialException as e:
         print(f"Fout bij verbinden met {serial_port}: {e}")
