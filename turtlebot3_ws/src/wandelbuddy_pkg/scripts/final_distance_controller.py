@@ -12,7 +12,7 @@ from sound_play.msg import SoundRequest
 from sound_play.libsoundplay import SoundClient
 
 # Definieer de drempelwaarde als een globale variabele
-THRESHOLD_DISTANCE = 2.0
+THRESHOLD_DISTANCE = 1.70
 
 old_goal = None
 goal_reached = False
@@ -46,7 +46,7 @@ def play_sound(sound_file):
         print("playing sound...")
         soundhandle.stopAll()
         soundhandle.playWave(sound_file, blocking=False)
-        rospy.sleep(2.0)
+        rospy.sleep(3.0)
         print("sound played")
         #sound_played = True
 
@@ -90,13 +90,14 @@ def check_and_control_navigation():
     distance = read_distance_from_serial()
 
     if distance is not None:
-        #print(f"Distance = {distance}")
-        if distance > THRESHOLD_DISTANCE:
+        print(f"Distance = {distance}")
+        if distance - 0.1> THRESHOLD_DISTANCE:
             # Stop de navigatie als de afstand te groot is
             print(f"Warning: Distance bigger than {THRESHOLD_DISTANCE}")
             stop_navigation()
             print("Stopped navigation. Waiting for distance to become acceptable.")
-            while distance > THRESHOLD_DISTANCE:
+            while distance + 0.1 > THRESHOLD_DISTANCE:
+                #play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Attention_call.wav')
                 distance = read_distance_from_serial()
                 print(f"Distance still too big: {distance}")
             print(f"Distance is OK again: {distance}")
@@ -104,7 +105,7 @@ def check_and_control_navigation():
         elif goal_reached:
             # Speel geluid af als het doel is bereikt
             print("Goal reached. try to play sound:")
-            play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Attention_call.wav')
+            play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Arrive_goal.wav')
 
             goal_reached = False  # Reset de variabele na het afspelen van het geluid
             # Stop het script na het afspelen van het geluid
