@@ -66,7 +66,7 @@ def play_sound(sound_file):
     if not sound_played:
         print("playing sound...")
         soundhandle.stopAll()
-        soundhandle.playWave(sound_file, blocking=False)
+        soundhandle.playWave(sound_file, volume = 0.7)
         rospy.sleep(3.0)
         print("sound played")
         #sound_played = True
