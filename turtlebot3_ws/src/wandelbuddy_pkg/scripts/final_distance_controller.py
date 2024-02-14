@@ -112,10 +112,17 @@ def check_and_control_navigation():
             print(f"Warning: Distance bigger than {THRESHOLD_DISTANCE}")
             stop_navigation()
             print("Stopped navigation. Waiting for distance to become acceptable.")
-            while distance + 0.1 > THRESHOLD_DISTANCE:
-                #play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Attention_call.wav')
+            while True:
                 distance = read_distance_from_serial()
-                print(f"Distance still too big: {distance}")
+                if distance is not None:
+                    if distance + 0.1 > THRESHOLD_DISTANCE:
+                        #play_sound('/home/ubuntu/workspaces/software-afstudeerstage/turtlebot3_ws/src/wandelbuddy_pkg/Sounds/Attention_call.wav')
+                        distance = read_distance_from_serial()
+                        print(f"Distance still too big: {distance}")
+                    else:
+                        break
+                else:
+                    print("no distance data received")
             print(f"Distance is OK again: {distance}")
             resume_navigation()
         elif goal_reached:
@@ -134,6 +141,7 @@ def check_and_control_navigation():
                 goal_msg.target_pose.header.frame_id = "map"  # Frame ID instellen op "map"
                 goal_msg.target_pose.pose = start_pose.pose.pose  # Gebruik de pose uit start_pose
                 move_base_client.send_goal(goal_msg)
+                print("returned to start position")
             else:
                 print("Start position is not saved. Cannot return to start.")
 
