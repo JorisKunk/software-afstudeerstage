@@ -120,8 +120,7 @@ def check_and_control_navigation():
             while True:
                 distance = read_distance_from_serial()
                 if distance is not None:
-                    if distance + 0.1 > THRESHOLD_DISTANCE:
-                        distance = read_distance_from_serial()
+                    if distance + 0.15 > THRESHOLD_DISTANCE:
                         rospy.loginfo("Distance still too big: %f", distance)
                     else:
                         break
@@ -171,14 +170,18 @@ def check_and_control_navigation():
 def read_distance_from_serial():
     try:
         ser.flushInput()
+        rospy.sleep(0.05)
         uwb_data_bytes = ser.readline()
         uwb_data = uwb_data_bytes.decode().strip()
         timestamp, distance_str = uwb_data.split(',')
         distance = float(distance_str)
         return distance
-    except ValueError:
+    except ValueError as e:
         # Als er een ValueError optreedt, bijvoorbeeld als de data onvolledig is
-        rospy.logerr("Received incomplete or invalid data from UWB module.")
+        rospy.logerr("Received incomplete or invalid data from UWB module.%s", e)
+        if uwb_data_bytes is not None:
+            print(f"following data received: {uwb_data_bytes}")
+             
         return None
 
 # main function which connects the serial port, tries to save the start position of the robot and starts the loop for the navigation control
@@ -192,8 +195,13 @@ if __name__ == '__main__':
         ser = serial.Serial(serial_port, baud_rate, timeout = 0.1)
         rospy.loginfo("%s Connected with serial port with following baud rate :%s", serial_port, baud_rate)
         save_start_pose()
-        while not rospy.is_shutdown():
-            check_and_control_navigation()
+        try:
+            while not rospy.is_shutdown():
+                check_and_control_navigation()
+                rospy.sleep(0.1)
+        except keyboardinterrupt:
+            soundhandle.stopAll()
+            rospy.signal_shutdown("keyboard interrupt")
 
     except serial.SerialException as e:
         rospy.loginfo("%s Fout bij verbinden met %s ", serial_port,e)
