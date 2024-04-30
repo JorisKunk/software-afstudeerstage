@@ -1,6 +1,9 @@
 import rospy
 from std_msgs.msg import String
+
+#simple publisher to test the workings of it
 def hello_world_pub():
+    #initialize publisher with a name
     rospy.init_node("hello_world_pub_node")
     pub = rospy.Publisher("hello_world", String, queue_size = 10)
 
