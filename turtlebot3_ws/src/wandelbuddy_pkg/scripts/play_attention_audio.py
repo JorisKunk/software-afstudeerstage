@@ -5,6 +5,7 @@ from sound_play.msg import SoundRequest
 from sound_play.libsoundplay import SoundClient
 from rospkg import RosPack
 
+# play a given audiofile with soundhandle
 def play_audio(file_name):
     soundhandle = SoundClient()
     rospy.sleep(1)
@@ -15,8 +16,8 @@ def play_audio(file_name):
 
 if __name__ == '__main__':
     rospy.init_node('speaker_control_node')
-
-    file_name = "Attention_call.wav"  # Update naar de juiste bestandsnaam
+    # file name of audio file to play
+    file_name = "Attention_call.wav"
 
     play_audio(file_name)
 
